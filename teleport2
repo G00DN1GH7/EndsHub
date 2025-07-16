@@ -1,0 +1,32 @@
+-- ServerScriptService/TeleportServerScript
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+-- Create RemoteEvent if it doesn't exist
+local event = ReplicatedStorage:FindFirstChild("TeleportRequest")
+if not event then
+	event = Instance.new("RemoteEvent")
+	event.Name = "TeleportRequest"
+	event.Parent = ReplicatedStorage
+end
+
+-- Settings: define the center and range for teleportation
+local centerPosition = Vector3.new(0, 50, 0) -- Starting position
+local range = Vector3.new(500, 100, 500)     -- X, Y, Z max offset
+
+event.OnServerEvent:Connect(function(player)
+	local char = player.Character
+	if not char then return end
+
+	local hrp = char:FindFirstChild("HumanoidRootPart")
+	if not hrp then return end
+
+	local randomOffset = Vector3.new(
+		math.random(-range.X, range.X),
+		math.random(-range.Y, range.Y),
+		math.random(-range.Z, range.Z)
+	)
+
+	local newPosition = centerPosition + randomOffset
+	hrp.CFrame = CFrame.new(newPosition)
+end)
